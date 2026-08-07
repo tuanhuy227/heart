@@ -3,10 +3,9 @@ import './Heart.css';
 
 const Heart = () => {
   const canvasRef = useRef(null);
+  const fireworksRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
   const [showMessageSection, setShowMessageSection] = useState(false);
-  const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
 
   useEffect(() => {
     if (isOpen) {
@@ -211,17 +210,106 @@ const Heart = () => {
     };
   }, []);
 
-  const handleAddMessage = () => {
-    if (newMessage.trim()) {
-      setMessages([...messages, { text: newMessage, time: new Date().toLocaleString('vi-VN') }]);
-      setNewMessage('');
+  // Fireworks effect
+  useEffect(() => {
+    if (!isOpen) return;
+    
+    const canvas = fireworksRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let animationId;
+    
+    class Firework {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.particles = [];
+        this.createParticles();
+      }
+      
+      createParticles() {
+        const particleCount = 30;
+        const colors = ['#ff6b9d', '#c06c84', '#ea80b0', '#ffd700', '#ff69b4', '#ffb6c1'];
+        for (let i = 0; i < particleCount; i++) {
+          const angle = (Math.PI * 2 * i) / particleCount;
+          const velocity = 2 + Math.random() * 3;
+          this.particles.push({
+            x: this.x,
+            y: this.y,
+            vx: Math.cos(angle) * velocity,
+            vy: Math.sin(angle) * velocity,
+            life: 1,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            size: 2 + Math.random() * 3
+          });
+        }
+      }
+      
+      update() {
+        this.particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.05; // gravity
+          p.life -= 0.01;
+        });
+        this.particles = this.particles.filter(p => p.life > 0);
+      }
+      
+      draw(ctx) {
+        this.particles.forEach(p => {
+          ctx.globalAlpha = p.life;
+          ctx.fillStyle = p.color;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
     }
-  };
+    
+    function animate() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      particles.forEach((fw, index) => {
+        fw.update();
+        fw.draw(ctx);
+        if (fw.particles.length === 0) {
+          particles.splice(index, 1);
+        }
+      });
+      
+      animationId = requestAnimationFrame(animate);
+    }
+    
+    function createFirework() {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height * 0.5;
+      particles.push(new Firework(x, y));
+    }
+    
+    function onResize() {
+      canvas.width = canvas.clientWidth;
+      canvas.height = canvas.clientHeight;
+    }
+    
+    window.addEventListener('resize', onResize);
+    onResize();
+    animate();
+    
+    const interval = setInterval(createFirework, 500);
+    
+    return () => {
+      window.removeEventListener('resize', onResize);
+      clearInterval(interval);
+      cancelAnimationFrame(animationId);
+    };
+  }, [isOpen]);
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleAddMessage();
     }
   };
 
@@ -239,58 +327,67 @@ const Heart = () => {
       
       {!isOpen ? (
         <div className="message-container">
-          <h1>Chào Phương Thảo nha!</h1>
-          <div className="heart-emoji">💖</div>
-          <p>Anh có một món quà tặng em</p>
+          <h1>🎂 Chúc Mừng Sinh Nhật 🎂</h1>
+          <div className="birthday-emojis">
+            <span className="bounce">🎉</span>
+            <span className="bounce" style={{animationDelay: '0.2s'}}>🎊</span>
+            <span className="bounce" style={{animationDelay: '0.4s'}}>🎈</span>
+          </div>
+          <div className="cat-meme">
+            <div className="cat-face">🐱</div>
+            <div className="cat-text">Phô Mai Que</div>
+          </div>
+          <p className="birthday-subtitle">Em Phương Thảo đáng iu cute</p>
           <p className="click-hint">Click để mở quà nhé! ✨</p>
         </div>
       ) : !showMessageSection ? (
         <div className="message-container">
-          <div className="heart-emoji">💖</div>
-          <h1 className="phuong-thao-name">Phương Thảo</h1>
+          <div className="birthday-celebration">
+            <h1 className="happy-birthday">Happy Birthday</h1>
+            <h1 className="phuong-thao-name">🎂 Phương Thảo 🎂</h1>
+            <div className="cake-container">
+              <div className="cake">
+                <div className="cake-layer cake-top">
+                  <div className="candle">
+                    <div className="flame">🕯️</div>
+                  </div>
+                </div>
+                <div className="cake-layer cake-middle"></div>
+                <div className="cake-layer cake-bottom"></div>
+              </div>
+            </div>
+            <div className="cat-party">
+              <span className="party-cat">😺</span>
+              <span className="party-cat">😸</span>
+              <span className="party-cat">😻</span>
+            </div>
+          </div>
         </div>
       ) : (
         <div className="gift-opened" onClick={(e) => e.stopPropagation()}>
           <div className="gift-content">
-            <h1>💝 Món Quà Của Anh 💝</h1>
-            <div className="gift-message">
-              <p>Gửi Phương Thảo yêu quý,</p>
-              <p>Đây là món quà nhỏ anh muốn tặng em</p>
-              <p>Hãy để lại lời nhắn cho anh nhé! 💖</p>
+            <h1>🎁 Sinh Nhật Vui Vẻ 🎁</h1>
+            
+            <div className="photo-frame">
+              <img src="/image.png" alt="Phương Thảo" className="birthday-photo" />
             </div>
-
-            <div className="message-section">
-              <h2>💌 Lời Nhắn</h2>
-              
-              <div className="message-input-area">
-                <textarea
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Viết lời nhắn của em tại đây..."
-                  rows="4"
-                />
-                <button onClick={handleAddMessage} className="send-button">
-                  Gửi lời nhắn 💕
-                </button>
+            
+            <div className="birthday-wishes">
+              <div className="cat-happy">
+                <span style={{fontSize: '60px'}}>😺</span>
+                <p style={{fontSize: '20px', margin: '10px 0'}}>Mèo Phô Mai Que chúc mừng!</p>
               </div>
-
-              {messages.length > 0 && (
-                <div className="messages-list">
-                  <h3>Các lời nhắn đã gửi:</h3>
-                  {messages.map((msg, index) => (
-                    <div key={index} className="message-item">
-                      <p className="message-text">{msg.text}</p>
-                      <p className="message-time">{msg.time}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
+            </div>
+            <div className="gift-message">
+              <p>🎂 Chúc em Phương Thảo đáng iu 🎂</p>
+              <p>Sinh nhật thật nhiều niềm vui</p>
+              <p>Luôn xinh đẹp, cute và hạnh phúc! 💖</p>
             </div>
           </div>
         </div>
       )}
       <canvas ref={canvasRef} id="pinkboard"></canvas>
+      {isOpen && <canvas ref={fireworksRef} className="fireworks-canvas"></canvas>}
     </div>
   );
 };
