@@ -9,15 +9,14 @@ const Heart = () => {
 
   useEffect(() => {
     if (isOpen) {
-      const timer = setTimeout(() => {
-        setShowMessageSection(true);
-      }, 10000); // 10 seconds
-
-      return () => clearTimeout(timer);
+      // Show message section immediately when opened
+      setShowMessageSection(true);
     }
   }, [isOpen]);
 
   useEffect(() => {
+    if (!showMessageSection) return; // Only start hearts animation when message section is shown
+    
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -208,11 +207,11 @@ const Heart = () => {
     return () => {
       window.removeEventListener('resize', onResize);
     };
-  }, []);
+  }, [showMessageSection]); // Add dependency on showMessageSection
 
-  // Fireworks effect
+  // Fireworks effect - only when message section is shown
   useEffect(() => {
-    if (!isOpen) return;
+    if (!showMessageSection) return;
     
     const canvas = fireworksRef.current;
     if (!canvas) return;
@@ -305,7 +304,7 @@ const Heart = () => {
       clearInterval(interval);
       cancelAnimationFrame(animationId);
     };
-  }, [isOpen]);
+  }, [showMessageSection]); // Change dependency from isOpen to showMessageSection
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -327,38 +326,34 @@ const Heart = () => {
       
       {!isOpen ? (
         <div className="message-container">
-          <h1>🎂 Chúc Mừng Sinh Nhật 🎂</h1>
-          <div className="birthday-emojis">
-            <span className="bounce">🎉</span>
-            <span className="bounce" style={{animationDelay: '0.2s'}}>🎊</span>
-            <span className="bounce" style={{animationDelay: '0.4s'}}>🎈</span>
+          <div className="letter-envelope">
+            <div className="envelope-top">✉️</div>
+            <h1 className="letter-title">Gửi Thảo My</h1>
           </div>
-          <div className="cat-meme">
-            <div className="cat-face">🐱</div>
-            <div className="cat-text">Phô Mai Que</div>
+          
+          <div className="heart-animation-center">
+            <span className="floating-heart">💕</span>
+            <span className="floating-heart" style={{animationDelay: '0.5s'}}>💗</span>
+            <span className="floating-heart" style={{animationDelay: '1s'}}>💓</span>
+            <span className="floating-heart" style={{animationDelay: '1.5s'}}>💖</span>
           </div>
-          <p className="birthday-subtitle">Em Phương Thảo đáng iu cute</p>
-          <p className="click-hint">Click để mở quà nhé! ✨</p>
+          
+          <p className="letter-subtitle">Có một điều tớ muốn nói với cậu...</p>
+          <p className="click-hint">📨 Click để mở thư</p>
         </div>
       ) : !showMessageSection ? (
         <div className="message-container">
           <div className="birthday-celebration">
-            <h1 className="happy-birthday">Happy Birthday</h1>
-            <h1 className="phuong-thao-name">🎂 Phương Thảo 🎂</h1>
-            <div className="cake-container">
-              <div className="cake">
-                <div className="cake-layer cake-top">
-                  <div className="candle">
-                    <div className="flame">🕯️</div>
-                  </div>
-                </div>
-                <div className="cake-layer cake-middle"></div>
-                <div className="cake-layer cake-bottom"></div>
+            <h1 className="happy-birthday">I LIKE YOU</h1>
+            <h1 className="phuong-thao-name">💖 Thảo My 💖</h1>
+            <div className="love-container">
+              <div className="big-heart">
+                <span className="heart-pulse">❤️</span>
               </div>
             </div>
             <div className="cat-party">
               <span className="party-cat">😺</span>
-              <span className="party-cat">😸</span>
+              <span className="party-cat">💕</span>
               <span className="party-cat">😻</span>
             </div>
           </div>
@@ -366,28 +361,29 @@ const Heart = () => {
       ) : (
         <div className="gift-opened" onClick={(e) => e.stopPropagation()}>
           <div className="gift-content">
-            <h1>🎁 Sinh Nhật Vui Vẻ 🎁</h1>
+            <h1>💝 Lời Tỏ Tình 💝</h1>
             
             <div className="photo-frame">
-              <img src="/image.png" alt="Phương Thảo" className="birthday-photo" />
+              <img src="/image.png" alt="Thảo My" className="birthday-photo" />
             </div>
             
             <div className="birthday-wishes">
               <div className="cat-happy">
-                <span style={{fontSize: '60px'}}>😺</span>
-                <p style={{fontSize: '20px', margin: '10px 0'}}>Mèo Phô Mai Que chúc mừng!</p>
+                <span style={{fontSize: '60px'}}>😻</span>
+                <p style={{fontSize: '20px', margin: '10px 0'}}>Anh thích em!</p>
               </div>
             </div>
             <div className="gift-message">
-              <p>🎂 Chúc em Phương Thảo đáng iu 🎂</p>
-              <p>Sinh nhật thật nhiều niềm vui</p>
-              <p>Luôn xinh đẹp, cute và hạnh phúc! 💖</p>
+              <p>💖 Thảo My ơi 💖</p>
+              <p>Cậu biết không, sau một thời gian tìm hiểu</p>
+              <p>Con tim tớ đã thuộc về 1 người</p>
+              <p>Cậu đồng ý làm người yêu tớ nhé Thảo My 💕</p>
             </div>
           </div>
         </div>
       )}
       <canvas ref={canvasRef} id="pinkboard"></canvas>
-      {isOpen && <canvas ref={fireworksRef} className="fireworks-canvas"></canvas>}
+      {showMessageSection && <canvas ref={fireworksRef} className="fireworks-canvas"></canvas>}
     </div>
   );
 };
