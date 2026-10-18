@@ -746,3 +746,70 @@ canvas {
     opacity: 0;
   }
 }
+
+
+/* Confession Page Styles */
+.confession-question {
+  font-size: 40px !important;
+  color: #fff !important;
+  margin: 30px 0 20px 0 !important;
+  text-shadow: 0 0 15px rgba(234, 128, 176, 0.6);
+  font-weight: normal !important;
+  line-height: 1.5;
+  animation: glow 2s ease-in-out infinite;
+}
+
+.confession-name {
+  font-size: 48px !important;
+  color: #ea80b0 !important;
+  margin: 10px 0 40px 0 !important;
+  text-shadow: 0 0 20px rgba(234, 128, 176, 0.8);
+  font-weight: bold !important;
+  animation: glow 2s ease-in-out infinite;
+}
+
+.buttons-container {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  margin-top: 40px;
+}
+
+.yes-button {
+  padding: 20px 50px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  background: linear-gradient(135deg, #ff6b9d 0%, #c06c84 100%);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(234, 128, 176, 0.5);
+  animation: buttonAppear 0.5s ease-out;
+}
+
+.yes-button:hover {
+  transform: scale(1.1) translateY(-5px);
+  box-shadow: 0 12px 30px rgba(234, 128, 176, 0.7);
+}
+
+.yes-button:active {
+  transform: scale(1.05) translateY(-2px);
+}
+
+.yes-button-2 {
+  background: linear-gradient(135deg, #ea80b0 0%, #ff69b4 100%);
+  animation-delay: 0.2s;
+}
+
+@keyframes buttonAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

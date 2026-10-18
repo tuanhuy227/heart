@@ -4,18 +4,14 @@ import './Heart.css';
 const Heart = () => {
   const canvasRef = useRef(null);
   const fireworksRef = useRef(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [showMessageSection, setShowMessageSection] = useState(false);
+  const [answered, setAnswered] = useState(false);
+
+  const handleYes = () => {
+    setAnswered(true);
+  };
 
   useEffect(() => {
-    if (isOpen) {
-      // Show message section immediately when opened
-      setShowMessageSection(true);
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (!showMessageSection) return; // Only start hearts animation when message section is shown
+    if (!answered) return;
     
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -207,11 +203,11 @@ const Heart = () => {
     return () => {
       window.removeEventListener('resize', onResize);
     };
-  }, [showMessageSection]); // Add dependency on showMessageSection
+  }, [answered]);
 
-  // Fireworks effect - only when message section is shown
+  // Fireworks effect
   useEffect(() => {
-    if (!showMessageSection) return;
+    if (!answered) return;
     
     const canvas = fireworksRef.current;
     if (!canvas) return;
@@ -304,7 +300,7 @@ const Heart = () => {
       clearInterval(interval);
       cancelAnimationFrame(animationId);
     };
-  }, [showMessageSection]); // Change dependency from isOpen to showMessageSection
+  }, [answered]);
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -313,9 +309,9 @@ const Heart = () => {
   };
 
   return (
-    <div className="heart-container" onClick={() => !isOpen && setIsOpen(true)}>
-      {/* Hidden YouTube iframe for music - only loads when opened */}
-      {isOpen && (
+    <div className="heart-container">
+      {/* Hidden YouTube iframe for music - only loads when answered yes */}
+      {answered && (
         <iframe
           style={{ display: 'none' }}
           src="https://www.youtube.com/embed/DK23U3sJrYg?autoplay=1&mute=0&loop=1&playlist=DK23U3sJrYg&controls=0"
@@ -324,44 +320,28 @@ const Heart = () => {
         />
       )}
       
-      {!isOpen ? (
+      {!answered ? (
         <div className="message-container">
-          <div className="letter-envelope">
-            <div className="envelope-top">✉️</div>
-            <h1 className="letter-title">Gửi Thảo My</h1>
+          <div className="photo-frame">
+            <img src="/image.png" alt="Thảo My" className="birthday-photo" />
           </div>
           
-          <div className="heart-animation-center">
-            <span className="floating-heart">💕</span>
-            <span className="floating-heart" style={{animationDelay: '0.5s'}}>💗</span>
-            <span className="floating-heart" style={{animationDelay: '1s'}}>💓</span>
-            <span className="floating-heart" style={{animationDelay: '1.5s'}}>💖</span>
-          </div>
+          <h1 className="confession-question">Em có đồng ý làm người yêu anh không</h1>
+          <h2 className="confession-name">Thảo My</h2>
           
-          <p className="letter-subtitle">Có một điều tớ muốn nói với cậu...</p>
-          <p className="click-hint">📨 Click để mở thư</p>
-        </div>
-      ) : !showMessageSection ? (
-        <div className="message-container">
-          <div className="birthday-celebration">
-            <h1 className="happy-birthday">I LIKE YOU</h1>
-            <h1 className="phuong-thao-name">💖 Thảo My 💖</h1>
-            <div className="love-container">
-              <div className="big-heart">
-                <span className="heart-pulse">❤️</span>
-              </div>
-            </div>
-            <div className="cat-party">
-              <span className="party-cat">😺</span>
-              <span className="party-cat">💕</span>
-              <span className="party-cat">😻</span>
-            </div>
+          <div className="buttons-container">
+            <button className="yes-button" onClick={handleYes}>
+              💖 Đồng ý
+            </button>
+            <button className="yes-button yes-button-2" onClick={handleYes}>
+              💕 Đồng ý luôn
+            </button>
           </div>
         </div>
       ) : (
-        <div className="gift-opened" onClick={(e) => e.stopPropagation()}>
+        <div className="gift-opened">
           <div className="gift-content">
-            <h1>💝 Lời Tỏ Tình 💝</h1>
+            <h1>💝 Yêu Em 💝</h1>
             
             <div className="photo-frame">
               <img src="/image.png" alt="Thảo My" className="birthday-photo" />
@@ -383,7 +363,7 @@ const Heart = () => {
         </div>
       )}
       <canvas ref={canvasRef} id="pinkboard"></canvas>
-      {showMessageSection && <canvas ref={fireworksRef} className="fireworks-canvas"></canvas>}
+      {answered && <canvas ref={fireworksRef} className="fireworks-canvas"></canvas>}
     </div>
   );
 };
